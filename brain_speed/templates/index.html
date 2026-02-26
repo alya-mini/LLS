@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#00f0ff" />
+  <title>Düşünce Hızı Testi</title>
+  <link rel="manifest" href="/manifest.json" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' };</script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="min-h-screen bg-slate-950 text-white">
+  <canvas id="neuroCanvas"></canvas>
+
+  <div class="container mx-auto px-4 py-5 relative z-10">
+    <header class="glass p-4 md:p-6 rounded-2xl mb-4 flex flex-wrap gap-3 justify-between items-center">
+      <div>
+        <h1 class="text-2xl md:text-4xl font-black neon-text">🧠 Düşünce Hızı Testi</h1>
+        <p id="subtitle" class="text-cyan-200">Beynin kaç milisaniye?</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="langBtn" class="btn-neon">TR / EN</button>
+        <button id="themeBtn" class="btn-neon">🌗</button>
+      </div>
+    </header>
+
+    <section class="grid lg:grid-cols-3 gap-4">
+      <article class="glass p-4 rounded-2xl lg:col-span-2">
+        <div class="flex flex-wrap gap-2 items-center mb-3">
+          <input id="username" class="input" maxlength="32" placeholder="Kullanıcı adı" />
+          <select id="country" class="input"></select>
+          <button id="startBtn" class="btn-neon">TESTE BAŞLA</button>
+          <button id="shareBtn" class="btn-neon">Paylaş</button>
+          <button id="exportBtn" class="btn-neon">PNG Export</button>
+        </div>
+
+        <div id="testArea" class="min-h-[260px] rounded-xl bg-black/30 p-4 border border-cyan-400/30">
+          <div class="timer text-4xl font-mono">000 ms</div>
+          <p class="opacity-80 mt-2">Başlamak için TESTE BAŞLA.</p>
+        </div>
+
+        <div class="mt-4 grid sm:grid-cols-3 gap-3 text-center">
+          <div class="glass p-3 rounded-xl">
+            <div class="label">Skor</div>
+            <div id="scoreValue" class="value">0</div>
+          </div>
+          <div class="glass p-3 rounded-xl">
+            <div class="label">Percentile</div>
+            <div id="percentileValue" class="value">0%</div>
+          </div>
+          <div class="glass p-3 rounded-xl">
+            <div class="label">Beyin Profili</div>
+            <div id="brainTypeValue" class="value">-</div>
+          </div>
+        </div>
+      </article>
+
+      <aside class="glass p-4 rounded-2xl">
+        <h2 class="text-xl font-bold mb-2">🌍 Global Ranking</h2>
+        <ul id="leaderboard" class="space-y-2 max-h-[250px] overflow-auto"></ul>
+        <hr class="my-4 border-cyan-400/30" />
+        <h3 class="font-semibold mb-2">🔥 Multiplayer</h3>
+        <div class="space-y-2">
+          <button id="createRoomBtn" class="btn-neon w-full">Oda Oluştur</button>
+          <div class="flex gap-2">
+            <input id="roomCode" class="input" placeholder="ROOM" />
+            <button id="joinRoomBtn" class="btn-neon">Katıl</button>
+          </div>
+          <button id="readyBtn" class="btn-neon w-full">Hazırım</button>
+          <div id="roomInfo" class="text-sm opacity-80"></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <script src="/static/js/tests.js"></script>
+  <script src="/static/js/multiplayer.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>
