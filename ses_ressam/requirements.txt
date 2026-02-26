@@ -1,0 +1,6 @@
+# Sesini Ressam Yap - Python bağımlılıkları
+Flask==3.0.3
+librosa==0.10.2.post1
+numpy==1.26.4
+pillow==10.4.0
+soundfile==0.12.1

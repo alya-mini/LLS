@@ -1,0 +1,62 @@
+<!--
+  Sesini Ressam Yap - Ana sayfa şablonu.
+
+  İçerik:
+  - Neon + glassmorphism arayüz
+  - 800x600 p5.js ses parçacık tuvali
+  - Kayıt butonu, yükleniyor göstergesi, özellik kartları
+  - Üretilen sanat galerisi (paylaşılabilir görseller)
+
+  Not: Tüm kullanıcı metinleri Türkçedir.
+-->
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sesini Ressam Yap 🎤➡️🎨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero glass">
+        <h1>Sesini Ressam Yap</h1>
+        <p class="subtitle">🎤 Konuş, sesin soyut bir tabloya dönüşsün. Viral challenge: <strong>"Sesim neye benziyor?"</strong></p>
+      </section>
+
+      <section class="canvas-card glass">
+        <div id="particle-canvas" aria-label="Ses görselleştirme alanı"></div>
+        <div class="controls">
+          <button id="record-btn" class="record-btn">🎤 Konuşmaya Başla</button>
+          <div id="status" class="status">Hazır. 5 saniye kayıt yapılacak.</div>
+          <div id="loading" class="loading hidden">
+            <span class="spinner"></span>
+            Sesin analiz ediliyor ve sanat üretiliyor...
+          </div>
+        </div>
+      </section>
+
+      <section class="result-card glass">
+        <h2>Yeni Sanat Eserin</h2>
+        <div id="feature-output" class="features"></div>
+        <a id="result-link" target="_blank" rel="noopener noreferrer" class="hidden">
+          <img id="result-image" alt="Ses analizinden üretilen soyut sanat" />
+        </a>
+      </section>
+
+      <section class="gallery-section">
+        <h2>🎨 Sanat Galerisi</h2>
+        <div id="gallery" class="gallery-grid"></div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='p5.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,210 @@
+/*
+  Sesini Ressam Yap - 2026 trend UI stilleri.
+
+  Tasarım kararları:
+  - Arkaplan: #1a1a2e -> #0f3460 gradient
+  - Font: Orbitron
+  - Glassmorphism kartlar
+  - Neon glow + pulse animasyonlu kayıt butonu
+  - Mobil uyumlu responsive düzen
+*/
+
+:root {
+  --bg-start: #1a1a2e;
+  --bg-end: #0f3460;
+  --neon-cyan: #49f6ff;
+  --neon-pink: #ff4dd2;
+  --glass: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.22);
+  --text: #f2f5ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Orbitron", sans-serif;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  padding: 24px;
+}
+
+.app-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), 0 0 16px rgba(73, 246, 255, 0.15);
+}
+
+.hero,
+.canvas-card,
+.result-card {
+  padding: 18px;
+}
+
+h1,
+h2 {
+  margin: 0 0 10px;
+  letter-spacing: 0.8px;
+}
+
+.subtitle {
+  margin: 0;
+  opacity: 0.92;
+}
+
+#particle-canvas {
+  width: 800px;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 26px rgba(73, 246, 255, 0.45);
+}
+
+.controls {
+  margin-top: 14px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.record-btn {
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 14px 24px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff4757, #b8003f);
+  box-shadow: 0 0 18px rgba(255, 71, 87, 0.7);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: pulse 1.7s infinite;
+}
+
+.record-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 26px rgba(255, 71, 87, 0.95);
+}
+
+.record-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  animation: none;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.65); }
+  70% { box-shadow: 0 0 0 18px rgba(255, 71, 87, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+}
+
+.status {
+  text-align: center;
+  opacity: 0.92;
+}
+
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.hidden {
+  display: none !important;
+}
+
+#result-image {
+  margin-top: 10px;
+  width: min(100%, 800px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 20px rgba(255, 77, 210, 0.25);
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.feature-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  background: rgba(73, 246, 255, 0.12);
+  border: 1px solid rgba(73, 246, 255, 0.35);
+}
+
+.gallery-section h2 {
+  margin: 4px 0 10px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.gallery-item {
+  padding: 8px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gallery-item img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+.gallery-item small {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.8;
+}
+
+@media (max-width: 820px) {
+  body {
+    padding: 14px;
+  }
+
+  .hero,
+  .canvas-card,
+  .result-card {
+    padding: 14px;
+  }
+
+  .record-btn {
+    width: 100%;
+  }
+}
