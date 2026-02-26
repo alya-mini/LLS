@@ -21,8 +21,8 @@ import tempfile
 from datetime import datetime
 from typing import Dict, Tuple
 
-import librosa
 import numpy as np
+import soundfile as sf
 from flask import Flask, jsonify, render_template, request
 from PIL import Image, ImageDraw, ImageFilter
 
@@ -40,28 +40,49 @@ def _extract_audio_features(file_bytes: bytes) -> Dict[str, float]:
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=True) as temp_audio:
         temp_audio.write(file_bytes)
         temp_audio.flush()
-        y, sr = librosa.load(temp_audio.name, sr=22050, mono=True)
+        y, sr = sf.read(temp_audio.name)
+        if y.ndim > 1:  # stereo -> mono
+            y = np.mean(y, axis=1)
 
-    if y.size < 512:
+    if len(y) < 512:
         raise ValueError("Ses kaydı çok kısa veya boş görünüyor.")
 
-    # Energy (RMS)
-    rms = librosa.feature.rms(y=y)[0]
-    energy = float(np.mean(rms))
+    # ✅ NaN koruması ile hesaplamalar
+    y = y.astype(np.float64)
+    
+    # Energy (RMS) - ✅ güvenli
+    energy = float(np.sqrt(np.mean(y**2)))
+    energy = max(0.001, min(energy, 1.0))  # sınırla
 
-    # Tempo
-    onset_env = librosa.onset.onset_strength(y=y, sr=sr)
-    tempo, _ = librosa.beat.beat_track(onset_envelope=onset_env, sr=sr)
-    tempo = float(np.atleast_1d(tempo)[0])
+    # Pitch (FFT peak) - ✅ güvenli
+    fft = np.fft.rfft(y)
+    freqs = np.fft.rfftfreq(len(y), 1/sr)
+    magnitude = np.abs(fft)
+    mask = (freqs >= 65) & (freqs <= 1000)
+    if np.any(mask):
+        peak_freq = freqs[mask][np.argmax(magnitude[mask])]
+        pitch = float(peak_freq)
+    else:
+        pitch = 220.0
+    pitch = max(65, min(pitch, 1000))
 
-    # Pitch (YIN yöntemi)
-    f0 = librosa.yin(y, fmin=65, fmax=1000, sr=sr)
-    valid_f0 = f0[np.isfinite(f0)]
-    pitch = float(np.median(valid_f0)) if valid_f0.size else 220.0
+    # Tempo (basit autocorrelation) - ✅ güvenli
+    autocorr = np.correlate(y, y, mode='full')[len(y)-1:]
+    autocorr = autocorr / np.max(np.abs(autocorr))  # normalize
+    peaks = np.argwhere(np.diff(np.sign(np.diff(autocorr))) < 0).flatten()
+    if len(peaks) > 1:
+        lags = peaks[1:] - peaks[:-1]
+        avg_lag = np.mean(lags) / sr
+        tempo = 60.0 / max(avg_lag, 0.1)
+    else:
+        tempo = 120.0
+    tempo = max(40, min(tempo, 220))
 
-    # Spektral merkez (renk karakteri için)
-    spectral_centroid = librosa.feature.spectral_centroid(y=y, sr=sr)[0]
-    centroid = float(np.mean(spectral_centroid))
+    # Spectral centroid - ✅ güvenli
+    freq_weights = freqs * magnitude
+    total_mag = np.sum(magnitude)
+    centroid = float(np.sum(freq_weights) / total_mag) if total_mag > 0 else 1000.0
+    centroid = max(200, min(centroid, 7000))
 
     return {
         "pitch": pitch,
@@ -74,13 +95,13 @@ def _extract_audio_features(file_bytes: bytes) -> Dict[str, float]:
 def _palette_from_features(features: Dict[str, float]) -> Tuple[Tuple[int, int, int], ...]:
     """Ses özelliklerinden 4 renkli neon/soyut bir palet üretir."""
     pitch = min(max(features["pitch"], 65), 1000)
-    energy = min(max(features["energy"], 0.005), 0.3)
+    energy = min(max(features["energy"], 0.001), 1.0)
     tempo = min(max(features["tempo"], 40), 220)
     centroid = min(max(features["centroid"], 200), 7000)
 
     hue_seed = int((pitch - 65) / (1000 - 65) * 255)
     sat_seed = int((tempo - 40) / (220 - 40) * 180 + 60)
-    val_seed = int((energy - 0.005) / (0.3 - 0.005) * 155 + 100)
+    val_seed = int((energy - 0.001) / (1.0 - 0.001) * 155 + 100)
 
     c1 = (hue_seed, 40, val_seed)
     c2 = (255 - hue_seed // 2, sat_seed, 230)
@@ -91,12 +112,13 @@ def _palette_from_features(features: Dict[str, float]) -> Tuple[Tuple[int, int, 
 
 def _generate_abstract_art(features: Dict[str, float], width: int = 800, height: int = 600) -> Image.Image:
     """Özelliklerden soyut sanat görseli üretir."""
-    pitch = features["pitch"]
-    energy = features["energy"]
-    tempo = features["tempo"]
-
+    # ✅ NaN koruması - güvenli seed
+    pitch = max(65, min(features["pitch"], 1000))
+    energy = max(0.001, min(features["energy"], 1.0))
+    tempo = max(40, min(features["tempo"], 220))
+    
     image = Image.new("RGB", (width, height), (15, 12, 36))
-    draw = ImageDraw.Draw(image, "RGBA")
+    draw = ImageDraw.Draw(image)
 
     palette = _palette_from_features(features)
 
@@ -106,39 +128,47 @@ def _generate_abstract_art(features: Dict[str, float], width: int = 800, height:
         r = int(26 + (10 * t))
         g = int(18 + (40 * t))
         b = int(46 + (90 * t))
-        draw.line([(0, y), (width, y)], fill=(r, g, b, 255))
+        draw.line([(0, y), (width, y)], fill=(r, g, b))
 
-    # Tempo/energy/pitch tabanlı organik katmanlar
-    rng_seed = int((pitch * 13 + energy * 10000 + tempo * 17) % (2**32 - 1))
-    rng = np.random.default_rng(rng_seed)
+    # ✅ NaN-safe random seed
+    safe_seed = int(abs(hash((pitch, energy, tempo))) % (2**31 - 1))
+    rng = np.random.default_rng(safe_seed)
 
     circles = int(35 + min(55, tempo / 3))
-    max_radius = int(60 + energy * 900)
+    max_radius = int(60 + energy * 400)  # azaltıldı
 
     for i in range(circles):
         color = palette[i % len(palette)]
         alpha = int(rng.integers(35, 120))
         radius = int(rng.integers(20, max(30, max_radius)))
-        x = int(rng.integers(-radius, width + radius))
-        y = int(rng.integers(-radius, height + radius))
-        draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=(*color, alpha))
+        x = int(rng.integers(0, width))
+        y = int(rng.integers(0, height))
+        # Güvenli ellipse bounds
+        left = max(0, x - radius)
+        top = max(0, y - radius)
+        right = min(width, x + radius)
+        bottom = min(height, y + radius)
+        draw.ellipse((left, top, right, bottom), fill=(*color, alpha))
 
-    # Ses dalgası benzeri çizgiler
-    wave_lines = int(6 + min(20, energy * 200))
+    # Ses dalgası çizgiler
+    wave_lines = int(6 + min(12, energy * 100))
     for n in range(wave_lines):
         color = palette[n % len(palette)]
         pts = []
-        amp = 15 + (energy * 200) + n * 2
-        freq = 0.004 + (pitch / 200000)
+        amp = 10 + (energy * 100) + n * 3
+        freq = 0.004 + (pitch / 300000)
         phase = n * 0.8
-        base_y = int(height * (n + 1) / (wave_lines + 1))
-        for x in range(0, width, 8):
-            y = base_y + int(math.sin(x * freq + phase) * amp)
-            pts.append((x, y))
-        draw.line(pts, fill=(*color, 150), width=3)
+        base_y = int(height * (n + 1) / (wave_lines + 2))
+        
+        for x in range(0, width, 6):
+            wave_y = base_y + int(math.sin(x * freq + phase) * amp)
+            wave_y = max(0, min(height-1, wave_y))
+            pts.append((x, wave_y))
+        
+        if len(pts) > 1:
+            draw.line(pts, fill=(*color, 180), width=2)
 
-    # Hafif blur + keskinlik etkisi
-    image = image.filter(ImageFilter.GaussianBlur(radius=1.2))
+    image = image.filter(ImageFilter.GaussianBlur(radius=0.8))
     return image
 
 
@@ -147,13 +177,13 @@ def analyze_audio():
     """Ses dosyasını analiz edip base64 sanat görseli üretir."""
     try:
         if "audio" not in request.files:
-            return jsonify({"error": "Ses dosyası bulunamadı. Lütfen tekrar deneyin."}), 400
+            return jsonify({"error": "Ses dosyası bulunamadı."}), 400
 
         audio_file = request.files["audio"]
         audio_bytes = audio_file.read()
 
-        if not audio_bytes:
-            return jsonify({"error": "Boş ses dosyası alındı. Mikrofon erişimini kontrol edin."}), 400
+        if not audio_bytes or len(audio_bytes) < 1000:
+            return jsonify({"error": "Boş veya geçersiz ses dosyası."}), 400
 
         features = _extract_audio_features(audio_bytes)
         art = _generate_abstract_art(features)
@@ -162,22 +192,17 @@ def analyze_audio():
         art.save(buffer, format="PNG")
         encoded = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-        return jsonify(
-            {
-                "image": f"data:image/png;base64,{encoded}",
-                "features": {
-                    "pitch": round(features["pitch"], 2),
-                    "energy": round(features["energy"], 4),
-                    "tempo": round(features["tempo"], 2),
-                },
-                "title": f"Ses Portresi - {datetime.now().strftime('%H:%M:%S')}",
-            }
-        )
-    except Exception as exc:  # noqa: BLE001
-        return (
-            jsonify({"error": f"Ses analizi sırasında bir hata oluştu: {str(exc)}"}),
-            500,
-        )
+        return jsonify({
+            "image": f"data:image/png;base64,{encoded}",
+            "features": {
+                "pitch": round(features["pitch"], 1),
+                "energy": round(features["energy"], 4),
+                "tempo": round(features["tempo"], 0),
+            },
+            "title": f"Ses Portresi - {datetime.now().strftime('%H:%M:%S')}",
+        })
+    except Exception as exc:
+        return jsonify({"error": f"Hata: {str(exc)[:100]}"}), 500
 
 
 if __name__ == "__main__":
