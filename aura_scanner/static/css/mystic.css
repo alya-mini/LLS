@@ -1,0 +1,27 @@
+:root {
+  --bg: #070914;
+  --panel: rgba(20, 24, 50, 0.56);
+  --text: #e6ecff;
+  --accent: #7b8dff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at 20% 20%, #1a2a6c 0%, transparent 35%),
+              radial-gradient(circle at 80% 10%, #b21f1f 0%, transparent 25%),
+              radial-gradient(circle at 50% 80%, #1f7a8c 0%, transparent 30%),
+              var(--bg);
+  min-height: 100vh;
+}
+.glass {
+  backdrop-filter: blur(16px);
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 1.25rem;
+  box-shadow: 0 0 28px rgba(70, 120, 255, 0.2);
+}
+.neon { text-shadow: 0 0 12px rgba(130, 170, 255, 0.7); }
+.chakra-pill { border-radius: 999px; padding: .2rem .6rem; font-size: .75rem; }
+#energyCanvas { width: 100%; height: 260px; border-radius: 1rem; }
