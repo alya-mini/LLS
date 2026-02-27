@@ -1,0 +1,9 @@
+{
+  "name": "Aura Tarayıcı AI",
+  "short_name": "AuraAI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070914",
+  "theme_color": "#7b8dff",
+  "icons": []
+}
