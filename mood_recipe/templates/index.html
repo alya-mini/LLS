@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="/static/manifest.json" />
+  <title>Duygu Yemek Tarifi AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+  <script src="https://unpkg.com/three@0.163.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.163.0/examples/js/loaders/GLTFLoader.js"></script>
+  <link rel="stylesheet" href="/static/css/restaurant.css" />
+</head>
+<body class="text-slate-100 min-h-screen">
+  <main class="container mx-auto px-4 py-6 space-y-4">
+    <header class="glass p-4 rounded-xl">
+      <h1 class="text-3xl font-bold">🍳 Duygu Yemek Tarifi AI</h1>
+      <p class="opacity-80">Mood seç, AI tarif üret, AR tabakta yemeğini gör.</p>
+    </header>
+
+    <section class="grid lg:grid-cols-3 gap-4">
+      <article class="glass p-4 rounded-xl space-y-3">
+        <h2 class="text-xl font-semibold">1) Mood + Profil</h2>
+        <select id="mood" class="w-full input"></select>
+        <input id="diet" class="w-full input" value="vejetaryen" placeholder="Beslenme tercihi" />
+        <input id="cuisine" class="w-full input" value="Türk" placeholder="Mutfak" />
+        <input id="servings" type="number" min="1" max="8" value="1" class="w-full input" />
+        <button id="detectMood" class="btn w-full">Kameradan Mood Tahmini</button>
+        <video id="webcam" autoplay muted playsinline class="rounded-lg w-full h-40 object-cover"></video>
+      </article>
+
+      <article class="glass p-4 rounded-xl lg:col-span-2 space-y-3">
+        <div class="flex gap-2 flex-wrap">
+          <button id="generateRecipe" class="btn">2) AI Tarif Üret</button>
+          <button id="saveJournal" class="btn-secondary">Journal'a Kaydet</button>
+          <button id="shareTiktok" class="btn-secondary">TikTok Caption Kopyala</button>
+        </div>
+        <pre id="recipeOutput" class="panel"></pre>
+        <div id="analysis" class="grid md:grid-cols-4 gap-2"></div>
+      </article>
+    </section>
+
+    <section class="grid lg:grid-cols-2 gap-4">
+      <article class="glass p-4 rounded-xl">
+        <h2 class="text-xl font-semibold mb-2">3) AR Yemek Görünümü</h2>
+        <div id="foodScene" class="h-72 rounded-xl border border-white/20"></div>
+      </article>
+      <article class="glass p-4 rounded-xl">
+        <h2 class="text-xl font-semibold mb-2">Mood Journal</h2>
+        <div id="journalList" class="space-y-2 max-h-72 overflow-auto"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="/static/js/nutrition.js"></script>
+  <script src="/static/js/emotion.js"></script>
+  <script src="/static/js/food3d.js"></script>
+  <script src="/static/js/recipe.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>
