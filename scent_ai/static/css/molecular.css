@@ -1,0 +1,29 @@
+:root { color-scheme: dark; }
+body {
+  font-family: Inter, system-ui, sans-serif;
+  background: radial-gradient(circle at top, #172554 0%, #020617 45%, #020617 100%);
+}
+#dna-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(56,189,248,.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  animation: drift 30s linear infinite;
+}
+@keyframes drift { from {transform: translateY(0);} to {transform: translateY(-24px);} }
+.glass {
+  background: linear-gradient(145deg, rgba(15,23,42,.75), rgba(30,41,59,.55));
+  border: 1px solid rgba(148, 163, 184, .25);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+}
+.btn, .btn-secondary {
+  padding: .55rem 1rem;
+  border-radius: .7rem;
+  font-weight: 600;
+}
+.btn { background: linear-gradient(90deg, #22d3ee, #a78bfa); color: #020617; }
+.btn-secondary { background: rgba(71,85,105,.55); border: 1px solid rgba(148,163,184,.25); }
+.glow { text-shadow: 0 0 14px rgba(34, 211, 238, 0.45); }
+.slider-label { display:flex; justify-content:space-between; font-size:.85rem; color:#cbd5e1; }
