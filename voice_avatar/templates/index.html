@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ses Klonu Avatar Studio</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="glass p-3">
+        <h1>🎤 Ses Klonu Avatar</h1>
+        <button id="installBtn" class="btn">PWA Yükle</button>
+      </header>
+      <main class="layout">
+        <section class="studio glass">
+          <canvas id="avatarCanvas"></canvas>
+          <video id="cameraFeed" autoplay playsinline muted></video>
+          <div id="waveform" class="waveform"></div>
+        </section>
+        <aside class="panel glass">
+          <label>Avatar
+            <select id="avatarSelect"></select>
+          </label>
+          <label>Pitch (-12/+12)
+            <input type="range" id="pitch" min="-12" max="12" value="0" />
+          </label>
+          <label>Speed (0.5x-2x)
+            <input type="range" id="speed" min="0.5" max="2" step="0.1" value="1" />
+          </label>
+          <label>Emotion
+            <select id="emotion"><option>mutlu</option><option>uzgun</option><option>heyecanli</option></select>
+          </label>
+          <label>Voice Preset
+            <select id="voicePreset"><option>natural</option><option>robot</option><option>child</option><option>deep</option><option>celebrity</option></select>
+          </label>
+          <label>Dil
+            <select id="language"></select>
+          </label>
+          <div class="grid2">
+            <button id="startMic" class="btn">🎙 Konuş</button>
+            <button id="stopMic" class="btn danger">Durdur</button>
+            <button id="arToggle" class="btn">AR Mod</button>
+            <button id="exportVideo" class="btn">15s Export</button>
+          </div>
+          <p id="status">Hazır.</p>
+          <div id="trending" class="trending"></div>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
