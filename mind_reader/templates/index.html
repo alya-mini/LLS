@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zihin Okuma Oyunu</title>
+  <link rel="manifest" href="/manifest.json" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/neon.css') }}" />
+</head>
+<body class="bg-black text-green-200 min-h-screen">
+  <div class="scanlines"></div>
+  <main class="relative z-10 p-4 md:p-8">
+    <header class="mb-6">
+      <h1 class="text-3xl md:text-5xl font-bold neon-text">🧠 Zihin Okuma Oyunu // EEG LAB</h1>
+      <p class="opacity-80">2-4 kişi, webcam + duygu analizi + telepati skoru.</p>
+    </header>
+
+    <section class="grid md:grid-cols-3 gap-4">
+      <div class="panel md:col-span-1 space-y-3">
+        <input id="playerName" class="input" placeholder="İsmin" maxlength="24" />
+        <div class="flex gap-2">
+          <button id="createBtn" class="btn-primary flex-1">Oda Aç</button>
+          <input id="roomCode" class="input w-28 uppercase" placeholder="KOD" maxlength="6" />
+          <button id="joinBtn" class="btn-primary">Katıl</button>
+        </div>
+        <div class="flex gap-2">
+          <button id="joinSpectatorBtn" class="btn-secondary flex-1">Spectator Olarak Katıl</button>
+        </div>
+
+        <select id="category" class="input">
+          <option>Hayvan</option><option>Renk</option><option>Sayı</option><option>Nesne</option>
+          <option>Ünlü</option><option>Film</option><option>Şehir</option><option>Yemek</option>
+          <option>Meslek</option><option>Marka</option><option>Süper kahraman</option><option>Şarkı</option>
+        </select>
+        <div class="flex gap-2">
+          <button id="startRoundBtn" class="btn-primary flex-1">30s Düşünme Başlat</button>
+          <button id="submitRoundBtn" class="btn-secondary">Sonucu Hesapla</button>
+        </div>
+        <div id="status" class="text-sm opacity-80">Durum: Hazır</div>
+        <div id="timer" class="text-xl font-bold">30</div>
+
+        <div class="grid grid-cols-4 gap-2">
+          <button class="emoji-btn" data-emoji="🧠">🧠</button>
+          <button class="emoji-btn" data-emoji="🔥">🔥</button>
+          <button class="emoji-btn" data-emoji="😲">😲</button>
+          <button class="emoji-btn" data-emoji="⚡">⚡</button>
+        </div>
+      </div>
+
+      <div class="panel md:col-span-2">
+        <div id="videoGrid" class="grid grid-cols-2 gap-3"></div>
+        <canvas id="eegCanvas" width="800" height="220" class="w-full mt-4"></canvas>
+        <div id="score" class="text-2xl mt-3 neon-text">Telepati uyumu: --%</div>
+      </div>
+    </section>
+
+    <section class="grid md:grid-cols-2 gap-4 mt-6">
+      <div class="panel">
+        <h2 class="text-xl mb-2">🌍 Global Liderlik</h2>
+        <ul id="globalBoard" class="space-y-1 text-sm"></ul>
+      </div>
+      <div class="panel">
+        <h2 class="text-xl mb-2">👥 Arkadaş Liderliği</h2>
+        <ul id="friendsBoard" class="space-y-1 text-sm"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.1/simplepeer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+  <script src="{{ url_for('static', filename='js/multiplayer.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/webcam.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/emotion.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/eeg.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>
