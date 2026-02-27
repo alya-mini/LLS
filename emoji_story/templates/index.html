@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0d12" />
+  <meta name="description" content="Konuşmanı emojilere çevir, 15 saniyelik viral video üret!" />
+  <meta property="og:title" content="Emoji Hikaye Anlatıcı" />
+  <meta property="og:description" content="Senin hikayen emoji olunca ne olur?" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1516387938699-a93567ec168e?w=1200" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <title>🎬 Emoji Hikaye Anlatıcı</title>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar glass">
+      <h1>🎬 Emoji Hikaye Anlatıcı</h1>
+      <div class="topbar-actions">
+        <select id="langSelect">
+          <option value="tr-TR">TR</option>
+          <option value="en-US">EN</option>
+          <option value="es-ES">ES</option>
+          <option value="fr-FR">FR</option>
+        </select>
+        <select id="themeSelect">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="neon">Neon</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="studio glass">
+      <div class="reel-frame">
+        <canvas id="storyCanvas" width="540" height="960" aria-label="video canvas"></canvas>
+        <div id="lottieLayer" class="lottie-layer"></div>
+        <div class="timer-ring" id="timerRing"><span id="timerText">15</span></div>
+      </div>
+
+      <div class="controls">
+        <input id="titleInput" maxlength="80" placeholder="Hikaye başlığı" />
+        <textarea id="storyInput" rows="3" placeholder="Hikayeni anlat veya mikrofona bas..." ></textarea>
+        <div class="btn-row">
+          <button id="recordBtn" class="btn primary">🎤 Hikayeni Anlat</button>
+          <button id="stopBtn" class="btn">⏹ Durdur</button>
+          <button id="renderBtn" class="btn accent">✨ Emojileştir</button>
+          <button id="exportBtn" class="btn success">🎥 Reels Export</button>
+        </div>
+        <p id="emojiOutput" class="emoji-output">😺😂🏃‍♂️💨</p>
+      </div>
+    </section>
+
+    <section class="music-share glass">
+      <div>
+        <label>Müzik Teması</label>
+        <select id="musicTheme">
+          <option value="epic">Epic</option>
+          <option value="funny">Funny</option>
+          <option value="calm">Calm</option>
+          <option value="dramatic">Dramatic</option>
+          <option value="romantic">Romantic</option>
+        </select>
+      </div>
+      <div class="btn-row">
+        <button id="shareBtn" class="btn">📲 Paylaş</button>
+        <button id="saveStoryBtn" class="btn">💾 Galeriye Kaydet</button>
+        <button id="installBtn" class="btn">📱 Ana Ekrana Ekle</button>
+      </div>
+    </section>
+
+    <section class="gallery glass">
+      <h2>🔥 Trending Hikayeler</h2>
+      <ul id="trendingList"></ul>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <script src="{{ url_for('static', filename='js/speech.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/animation.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/video.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
