@@ -1,0 +1,36 @@
+:root { color-scheme: dark; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: radial-gradient(circle at top, #29104a, #030310 50%, #010104);
+  color: #e8e8ff;
+}
+.app-shell { padding: 12px; }
+.layout { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; }
+.studio { position: relative; min-height: 72vh; overflow: hidden; }
+#avatarCanvas, #cameraFeed { width: 100%; height: 100%; border-radius: 16px; }
+#cameraFeed { position: absolute; inset: 0; object-fit: cover; display: none; opacity: 0.35; }
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(14px);
+}
+.panel { display: grid; gap: 10px; padding: 16px; }
+.btn {
+  background: linear-gradient(90deg, #8f4cff, #00c2ff);
+  border: none; border-radius: 10px; color: #fff; padding: 8px; cursor: pointer;
+}
+.btn.danger { background: linear-gradient(90deg, #e44, #f80); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+label { display: grid; gap: 4px; font-size: 14px; }
+select,input { width: 100%; }
+.waveform {
+  position: absolute; bottom: 12px; left: 12px; right: 12px; height: 64px;
+  border-radius: 10px; background: linear-gradient(180deg, #00f5ff44, #ff00f544);
+}
+.trending { max-height: 180px; overflow: auto; font-size: 12px; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .studio { min-height: 50vh; }
+}

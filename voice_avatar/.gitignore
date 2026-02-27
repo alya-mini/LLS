@@ -1,0 +1,4 @@
+# Local runtime artifacts
+avatars.db
+__pycache__/
+*.pyc
