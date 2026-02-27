@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#060816" />
+  <title>Zaman Yolculuğu Simülatörü</title>
+  <link rel="stylesheet" href="/static/css/timeline.css" />
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="container">
+    <h1>🕰️ Zaman Yolculuğu Simülatörü</h1>
+    <div class="panel grid">
+      <input id="birthDate" type="date" />
+      <select id="mood">
+        <option value="happy">Mutlu</option><option value="motivated" selected>Motive</option>
+        <option value="anxious">Kaygılı</option><option value="sad">Üzgün</option>
+      </select>
+      <select id="age"></select>
+      <input id="apiKey" type="password" placeholder="OpenAI API Key (opsiyonel)" />
+    </div>
+
+    <div class="panel">
+      <div id="persona-tag" class="badge"></div>
+      <div id="timeline" class="timeline"></div>
+      <div class="small">Yanıt süresi: <span id="latency">0ms</span></div>
+    </div>
+
+    <div class="panel">
+      <div id="chat-log" class="chat-log"></div>
+      <div class="grid" style="margin-top:10px">
+        <input id="message" placeholder="Geçmişteki/gelecekteki benine mesaj..." />
+        <button id="sendBtn">Zamansal Diyaloğu Başlat</button>
+      </div>
+    </div>
+
+    <div class="panel grid">
+      <div>
+        <h3>⚡ Kader Pivot Analizi</h3>
+        <div id="pivot-results"></div>
+      </div>
+      <div>
+        <h3>🌌 Alternatif Hayat</h3>
+        <div id="alt-life"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🌍 Global İlginç Diyaloglar</h3>
+      <div id="gallery"></div>
+    </div>
+
+    <div class="panel grid">
+      <input id="capsuleAlias" placeholder="Rumuz" />
+      <input id="capsuleYear" type="number" value="2050" />
+      <textarea id="capsuleMsg" placeholder="2050'de açılacak mesajın..."></textarea>
+      <button id="capsuleBtn">Zaman Kapsülüne Kilitle</button>
+    </div>
+  </div>
+  <script type="module" src="/static/js/chat.js"></script>
+</body>
+</html>

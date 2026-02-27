@@ -1,0 +1,4 @@
+{
+  "noBinaryFiles": false,
+  "files": ["dist/**/*.{html,js,css}"]
+}
