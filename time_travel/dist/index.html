@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#060816" />
+  <title>Zaman Yolculuğu Simülatörü</title>
+  <style>:root { --bg1:#060816; --bg2:#1d1033; --neon:#6ff; --pink:#ff4fd8; --text:#eef2ff; }
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui;background:radial-gradient(circle at 20% 10%,#2c1650,var(--bg1) 55%,#02030a);color:var(--text);min-height:100vh;overflow-x:hidden}
+.stars{position:fixed;inset:0;background-image:radial-gradient(#fff8 1px,transparent 1px);background-size:3px 3px;opacity:.14;pointer-events:none;animation:drift 120s linear infinite}
+@keyframes drift{from{transform:translateY(0)}to{transform:translateY(-500px)}}
+.container{max-width:1100px;margin:auto;padding:20px}
+.panel{background:#ffffff12;border:1px solid #ffffff26;border-radius:16px;padding:16px;margin-bottom:16px;backdrop-filter: blur(8px)}
+h1{font-size:clamp(1.4rem,4vw,2.4rem)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+input,select,textarea,button{width:100%;padding:10px;border-radius:10px;border:1px solid #ffffff33;background:#090c20;color:#fff}
+button{background:linear-gradient(90deg,var(--neon),var(--pink));color:#09101a;font-weight:700;cursor:pointer}
+.timeline{position:relative;height:170px;border-radius:16px;background:linear-gradient(90deg,#2f2f67,#3c88a8,#b04b8f);overflow:hidden}
+.timeline .line{position:absolute;left:5%;right:5%;top:50%;height:3px;background:#fff6}
+.marker{position:absolute;top:calc(50% - 10px);width:20px;height:20px;border-radius:50%;background:var(--neon);box-shadow:0 0 14px var(--neon)}
+.marker.pivot{background:var(--pink);box-shadow:0 0 14px var(--pink)}
+.chat-log{max-height:250px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.bubble{padding:10px;border-radius:10px}.user{background:#214}.ai{background:#132a3b}
+.small{font-size:.85rem;opacity:.85}
+.badge{display:inline-block;padding:3px 8px;border-radius:99px;background:#fff2;margin-right:6px}
+</style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="container">
+    <h1>🕰️ Zaman Yolculuğu Simülatörü</h1>
+    <div class="panel grid">
+      <input id="birthDate" type="date" />
+      <select id="mood">
+        <option value="happy">Mutlu</option><option value="motivated" selected>Motive</option>
+        <option value="anxious">Kaygılı</option><option value="sad">Üzgün</option>
+      </select>
+      <select id="age"></select>
+      <input id="apiKey" type="password" placeholder="OpenAI API Key (opsiyonel)" />
+    </div>
+
+    <div class="panel">
+      <div id="persona-tag" class="badge"></div>
+      <div id="timeline" class="timeline"></div>
+      <div class="small">Yanıt süresi: <span id="latency">0ms</span></div>
+    </div>
+
+    <div class="panel">
+      <div id="chat-log" class="chat-log"></div>
+      <div class="grid" style="margin-top:10px">
+        <input id="message" placeholder="Geçmişteki/gelecekteki benine mesaj..." />
+        <button id="sendBtn">Zamansal Diyaloğu Başlat</button>
+      </div>
+    </div>
+
+    <div class="panel grid">
+      <div>
+        <h3>⚡ Kader Pivot Analizi</h3>
+        <div id="pivot-results"></div>
+      </div>
+      <div>
+        <h3>🌌 Alternatif Hayat</h3>
+        <div id="alt-life"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🌍 Global İlginç Diyaloglar</h3>
+      <div id="gallery"></div>
+    </div>
+
+    <div class="panel grid">
+      <input id="capsuleAlias" placeholder="Rumuz" />
+      <input id="capsuleYear" type="number" value="2050" />
+      <textarea id="capsuleMsg" placeholder="2050'de açılacak mesajın..."></textarea>
+      <button id="capsuleBtn">Zaman Kapsülüne Kilitle</button>
+    </div>
+  </div>
+  <script type="module">export const ages = [5, 10, 15, 20, 30, 40, 60, 75];
+
+export function describePersona(age) {
+  if (age <= 6) return "👶 Masum & oyunbaz";
+  if (age <= 16) return "🧒 Asi & duygusal";
+  if (age <= 35) return "👨 Kariyer odaklı";
+  if (age <= 65) return "🧓 Bilge & nostaljik";
+  return "🌌 Zamansal mentor";
+}
+
+export function initAgeUI() {
+  const select = document.getElementById("age");
+  ages.forEach((age) => {
+    const opt = document.createElement("option");
+    opt.value = age;
+    opt.textContent = `${age} yaş`;
+    select.appendChild(opt);
+  });
+  select.value = 30;
+  const persona = document.getElementById("persona-tag");
+  const sync = () => (persona.textContent = describePersona(Number(select.value)));
+  select.addEventListener("change", sync);
+  sync();
+}
+
+export function renderTimeline(currentAge = 30) {
+  const holder = document.getElementById("timeline");
+  holder.innerHTML = '<div class="line"></div>';
+  const milestones = [
+    { age: 0, label: "Doğum" },
+    { age: 5, label: "5" },
+    { age: 15, label: "15" },
+    { age: 30, label: "30" },
+    { age: 60, label: "60" },
+    { age: 85, label: "∞" },
+  ];
+  milestones.forEach((m) => {
+    const marker = document.createElement("div");
+    marker.className = "marker" + (m.age === currentAge ? " pivot" : "");
+    marker.style.left = `calc(${Math.min(m.age, 85) / 85 * 90}% + 5%)`;
+    marker.title = m.label;
+    holder.appendChild(marker);
+  });
+}
+
+export async function runPivot(age, mood) {
+  const res = await fetch('/api/pivot-analysis', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ age, mood })
+  });
+  const data = await res.json();
+  const wrap = document.getElementById('pivot-results');
+  wrap.innerHTML = `<div class='small'>Mood-Zaman korelasyonu: <b>${Math.round(data.moodCorrelation * 100)}%</b></div>` +
+    data.pivots.map((p, i) => `<div><span class='badge'>#${i+1}</span>${p.title} (yaş ${p.age}) Etki: ${p.impact}%</div>`).join('') +
+    `<div class='small'>Paradox riski: ${Math.round(data.paradoxRisk*100)}%</div>`;
+
+  const alt = await fetch('/api/alternative-life', { method: 'POST' }).then(r => r.json());
+  document.getElementById('alt-life').innerHTML = alt.scenarios
+    .map(s => `<div>${s.path}: %${s.happiness} mutlu, %${s.wealth} zenginlik</div>`).join('');
+}
+
+
+
+
+
+function addBubble(role, text) {
+  const log = document.getElementById('chat-log');
+  const d = document.createElement('div');
+  d.className = `bubble ${role}`;
+  d.textContent = text;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+async function loadGallery() {
+  const data = await fetch('/api/dialogues/top').then(r => r.json());
+  const gallery = document.getElementById('gallery');
+  gallery.innerHTML = data.items.map(i => `<div class='small'>[${i.age}] ${i.userText.slice(0,60)} → ${i.aiText.slice(0,90)}...</div>`).join('') || 'Henüz diyalog yok.';
+}
+
+async function sendChat() {
+  const age = Number(document.getElementById('age').value);
+  const mood = document.getElementById('mood').value;
+  const birthDate = document.getElementById('birthDate').value;
+  const message = document.getElementById('message').value;
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!message) return;
+
+  addBubble('user', message);
+  const started = performance.now();
+  const res = await fetch('/api/chat', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ age, mood, birthDate, message, apiKey })
+  });
+  const data = await res.json();
+  addBubble('ai', data.reply);
+  document.getElementById('latency').textContent = `${Math.round(performance.now() - started)}ms`;
+  renderTimeline(age);
+  await runPivot(age, mood);
+  await loadGallery();
+}
+
+async function saveCapsule() {
+  await fetch('/api/time-capsule', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ alias: capsuleAlias.value, openYear: capsuleYear.value, message: capsuleMsg.value })
+  });
+  alert('Zaman kapsülü kaydedildi!');
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  initAgeUI();
+  renderTimeline(30);
+  await runPivot(30, 'motivated');
+  await loadGallery();
+
+  sendBtn.addEventListener('click', sendChat);
+  message.addEventListener('keydown', (e) => e.key === 'Enter' && sendChat());
+  capsuleBtn.addEventListener('click', saveCapsule);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/js/sw.js').catch(() => {});
+  }
+});
+</script>
+</body>
+</html>
