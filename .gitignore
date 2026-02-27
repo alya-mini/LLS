@@ -1,0 +1,9 @@
+# Runtime SQLite databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Python caches
+__pycache__/
+*.py[cod]
