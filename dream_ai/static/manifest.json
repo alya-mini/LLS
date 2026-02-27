@@ -1,0 +1,10 @@
+{
+  "name": "Rüya Yorumlayıcı AI",
+  "short_name": "RüyaAI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05000f",
+  "theme_color": "#0a0217",
+  "description": "Rüyanı yaz, AI yorumlasın, avatarını üret.",
+  "icons": []
+}
