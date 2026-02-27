@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rüya Yorumlayıcı AI</title>
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#0a0217">
+  <link rel="stylesheet" href="/static/css/dream.css" />
+</head>
+<body>
+  <canvas id="fractalCanvas"></canvas>
+  <main class="glass">
+    <h1 id="appTitle">🌙 Rüya Yorumlayıcı AI</h1>
+    <div class="controls">
+      <input id="openaiKey" type="password" placeholder="OpenAI API Key (opsiyonel)" />
+      <select id="langSelect">
+        {% for code, data in languages.items() %}
+        <option value="{{code}}">{{code.upper()}} - {{data.app}}</option>
+        {% endfor %}
+      </select>
+      <button id="voiceBtn">🎤 Sesle</button>
+    </div>
+    <textarea id="dreamInput" placeholder="Rüyanı tüm detaylarıyla yaz..."></textarea>
+    <button id="analyzeBtn">🔮 Rüyamı Yorumla</button>
+
+    <section id="result" class="hidden">
+      <h2>Analiz Sonucu</h2>
+      <p id="summary"></p>
+      <pre id="symbolAnalysis"></pre>
+      <p id="archetypes"></p>
+      <p id="prediction"></p>
+      <p id="fateScore" class="score"></p>
+      <p id="astro"></p>
+      <canvas id="avatarCanvas" width="360" height="360"></canvas>
+      <div class="controls">
+        <button id="shareBtn">📱 Kartı İndir</button>
+      </div>
+    </section>
+
+    <section>
+      <h3>🔥 Global Trendler (7 gün)</h3>
+      <ul id="trends"></ul>
+    </section>
+
+    <section>
+      <h3>📓 Offline Rüya Journal</h3>
+      <ul id="journal"></ul>
+    </section>
+  </main>
+
+  <script src="/static/js/fractal.js"></script>
+  <script src="/static/js/astro.js"></script>
+  <script src="/static/js/dream.js"></script>
+</body>
+</html>
